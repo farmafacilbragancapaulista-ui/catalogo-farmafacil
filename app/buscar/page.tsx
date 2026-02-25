@@ -1,18 +1,15 @@
 "use client";
 
-export const dynamic = "force-dynamic";
+import { Suspense, useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import type { Product } from "@/types/catalog";
+import { createFuseIndex } from "@/lib/search/fuseConfig";
+import { ProductGrid } from "@/components/catalog/ProductGrid";
 
-import { useEffect, useMemo, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
-import type { Product } from '@/types/catalog';
-import { createFuseIndex } from '@/lib/search/fuseConfig';
-import { ProductGrid } from '@/components/catalog/ProductGrid';
-
-export default function SearchPage() {
+function SearchContent() {
   const searchParams = useSearchParams();
-  const initialQuery = searchParams.get('q') ?? '';
-
-  const [query, setQuery] = useState('');
+  const initialQuery = searchParams.get("q") ?? "";
+  const [query, setQuery] = useState(initialQuery);
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -24,13 +21,11 @@ export default function SearchPage() {
     const fetchProducts = async () => {
       setLoading(true);
       try {
-        const res = await fetch('/api/search/products', {
-          cache: 'no-store',
-        });
+        const res = await fetch("/api/search/products");
         const json = (await res.json()) as { products: Product[] };
         setProducts(json.products);
       } catch (err) {
-        console.error('Erro ao carregar produtos para busca:', err);
+        console.error("Erro ao carregar produtos para busca:", err);
       } finally {
         setLoading(false);
       }
@@ -43,9 +38,7 @@ export default function SearchPage() {
 
   const results = useMemo(() => {
     if (!query.trim()) return products;
-
-    const normalized = query.replace(/s\b/gi, '');
-
+    const normalized = query.replace(/s\b/gi, "");
     return fuse.search(normalized).map((r) => r.item);
   }, [fuse, products, query]);
 
@@ -65,7 +58,7 @@ export default function SearchPage() {
 
         {query && (
           <p className="text-xs text-slate-500">
-            Exibindo {results.length} resultado(s) para &quot;{query}&quot;
+            Exibindo {results.length} resultado(s) para "{query}"
           </p>
         )}
       </section>
@@ -78,5 +71,13 @@ export default function SearchPage() {
         <ProductGrid products={results} />
       )}
     </div>
+  );
+}
+
+export default function SearchPage() {
+  return (
+    <Suspense fallback={<p className="p-8 text-center">Carregando busca...</p>}>
+      <SearchContent />
+    </Suspense>
   );
 }
