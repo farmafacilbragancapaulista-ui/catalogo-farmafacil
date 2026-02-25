@@ -9,6 +9,8 @@ type Props = {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
+  // eslint-disable-next-line no-console
+  console.log('[generateMetadata /produto/[slug]] params.slug:', slug);
   const product = await getProductBySlug(slug);
 
   if (!product) {
@@ -34,6 +36,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function ProductPage({ params }: Props) {
   const { slug } = await params;
+  // eslint-disable-next-line no-console
+  console.log('[ProductPage /produto/[slug]] params.slug:', slug);
   const product = await getProductBySlug(slug);
 
   if (!product) {

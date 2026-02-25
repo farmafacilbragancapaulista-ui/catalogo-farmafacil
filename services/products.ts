@@ -135,15 +135,27 @@ export async function getCatalogProducts(params: {
 }
 
 export async function getProductBySlug(slug: string) {
-  const { data, error } = await supabase.from('products').select(baseProductSelect).eq('slug', slug).maybeSingle();
+  // Log para depuração do slug recebido
+  // eslint-disable-next-line no-console
+  console.log('[getProductBySlug] slug recebido:', slug);
+
+  const { data, error } = await supabase
+    .from('products')
+    .select(baseProductSelect)
+    .eq('slug', slug)
+    .single();
 
   if (error) {
     // eslint-disable-next-line no-console
-    console.error('Erro ao buscar produto por slug:', error);
+    console.error('[getProductBySlug] Erro ao buscar produto por slug:', slug, error);
     return null;
   }
 
-  if (!data) return null;
+  if (!data) {
+    // eslint-disable-next-line no-console
+    console.warn('[getProductBySlug] Produto não encontrado para slug:', slug);
+    return null;
+  }
   return normalizeProduct(data as RawProduct);
 }
 
