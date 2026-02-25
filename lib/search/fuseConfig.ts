@@ -1,4 +1,4 @@
-import Fuse from 'fuse.js';
+import Fuse, { IFuseOptions } from 'fuse.js';
 import type { Product } from '@/types/catalog';
 
 export type SearchableProduct = Product & {
@@ -7,7 +7,7 @@ export type SearchableProduct = Product & {
   tag_names?: string[];
 };
 
-export const fuseOptions: Fuse.IFuseOptions<SearchableProduct> = {
+export const fuseOptions: IFuseOptions<SearchableProduct> = {
   includeScore: true,
   threshold: 0.35,
   distance: 50,
