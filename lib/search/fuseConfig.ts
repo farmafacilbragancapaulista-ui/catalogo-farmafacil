@@ -25,4 +25,3 @@ export const fuseOptions: IFuseOptions<SearchableProduct> = {
 export function createFuseIndex(products: SearchableProduct[]) {
   return new Fuse(products, fuseOptions);
 }
-
